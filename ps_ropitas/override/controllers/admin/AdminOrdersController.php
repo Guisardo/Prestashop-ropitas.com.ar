@@ -156,7 +156,7 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
              $this->fields_list = array_merge($part1, $part2);
          }
  
-         $this->shopLinkType = 'shop';
+         $this->shopLinkType = false;
          $this->shopShareDatas = Shop::SHARE_ORDER;
  
          if (Tools::isSubmit('id_order')) {
