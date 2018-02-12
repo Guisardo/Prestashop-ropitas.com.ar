@@ -1,4 +1,4 @@
-var CACHE_NAME = 'ropitas-cache-v1.4.3';
+var CACHE_NAME = 'ropitas-cache-v1.5.1';
 
 var urlsToCache = [
   '/'
@@ -102,4 +102,42 @@ self.addEventListener('fetch', function(event) {
 
       })
     );
+});
+
+/* The activate event fires after a service worker has been successfully installed.
+   It is most useful when phasing out an older version of a service worker, as at
+   this point you know that the new worker was installed correctly. In this example,
+   we delete old caches that don't match the version in the worker we just finished
+   installing.
+*/
+self.addEventListener("activate", function(event) {
+  /* Just like with the install event, event.waitUntil blocks activate on a promise.
+     Activation will fail unless the promise is fulfilled.
+  */
+
+  event.waitUntil(
+    caches
+      /* This method returns a promise which will resolve to an array of available
+         cache keys.
+      */
+      .keys()
+      .then(function (keys) {
+        // We return a promise that settles when all outdated caches are deleted.
+        return Promise.all(
+          keys
+            .filter(function (key) {
+              // Filter by keys that don't start with the latest version prefix.
+              return !key.startsWith(CACHE_NAME);
+            })
+            .map(function (key) {
+              /* Return a promise that's fulfilled
+                 when each outdated cache is deleted.
+              */
+              return caches.delete(key);
+            })
+        );
+      })
+      .then(function() {
+      })
+  );
 });

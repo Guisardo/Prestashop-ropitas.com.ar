@@ -4,7 +4,7 @@ class Ps_Ropitas extends Module
 	public function __construct()
 	{
 		$this->name = 'ps_ropitas';
-		$this->version = '1.0.0';
+		$this->version = '1.0.2';
 		$this->author = 'Guisardo';
 		$this->need_instance = 0;
 
@@ -23,7 +23,7 @@ class Ps_Ropitas extends Module
 		}
 
 		if (
-			!Tools::copy(_PS_MODULE_DIR_.'/ps_ropitas/lib/service-worker.js', _PS_ROOT_DIR_.'/js/service-worker.js')
+			!Tools::copy(_PS_MODULE_DIR_.'/ps_ropitas/views/js/service-worker.js', _PS_ROOT_DIR_.'/js/service-worker.js')
 			||
 			!Tools::copy(_PS_MODULE_DIR_.'/ps_ropitas/lib/opensearch.xml', _PS_ROOT_DIR_.'/opensearch.xml')
 			||
