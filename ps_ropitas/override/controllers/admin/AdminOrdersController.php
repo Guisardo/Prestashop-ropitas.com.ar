@@ -6,16 +6,6 @@
  {
      public function __construct()
      {
-         $this->bootstrap = true;
-         $this->table = 'order';
-         $this->className = 'Order';
-         $this->lang = false;
-         $this->addRowAction('view');
-         $this->explicitSelect = true;
-         $this->allow_export = true;
-         $this->deleted = false;
-         $this->context = Context::getContext();
- 
          parent::__construct();
 
          $this->_select = '
@@ -178,6 +168,51 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
 
         $tpl_path = '../../../../modules/ps_ropitas/views/templates/admin/orders/form.tpl';
         $this->content .= $this->createTemplate($tpl_path, $this->context->smarty)->fetch();
+    }
+    public function renderList()
+    {
+        $this->addRowAction('WhatsApp');
+        return parent::renderList();
+    }
+    public function displayWhatsappLink($token = null, $id)
+    {
+        $order = new Order(intval($id));
+        $address = new Address($order->id_address_invoice);
+
+        $phone = (int)preg_replace('/\D+/', '', $address->phone_mobile);
+        if ($phone == 0) {
+            $phone = (int)preg_replace('/\D+/', '', $address->phone);
+        }
+
+        $msg = '';
+        if ($order->current_state == 42) {
+            $customer = new Customer($order->id_customer);
+            $msg = sprintf($this->l('Hola %s!
+Mi nombre es Violeta. Te molesto para consultarte por el estado de tu pedido '.$order->reference.' de Gamisé que armaste en http://www.ropitas.com.ar.
+Veo que comenzaste con el armado del carrito de compras pero quedo en medio del proceso de pago y quedaron reservados los artículos.
+Si querés continuar la compra, seguí las siguientes indicaciones, de lo contrario, avisame si querés que cancele el pedido. Ingresá a https://tienda.ropitas.com.ar/order-history ahí va a ver tu pedido en el que dice "transacción comenzada", tenes que hacer click en el código de referencia que está subrayado. 
+Eso va a cargar en la misma página, más abajo, el detalle del pedido. En ese detalle hay una sección de mercadopago con un botón verde para que puedas elegir el medio de pago.
+Quedo atenta a tus consultas!!'), $customer->firstname, $order->reference);
+        }
+        if ($order->current_state == 33) {
+            $customer = new Customer($order->id_customer);
+            $msg = sprintf($this->l('Hola %s!
+Mi nombre es Violeta.
+Te quería consultar si seguís interesada en concretar la compra del pedido '.$order->reference.' de Gamisé que armaste en http://www.ropitas.com.ar o preferís que cancele la reserva de los artículos.
+Necesitás que te espere unos días?
+Saludos'), $customer->firstname, $order->reference);
+        }
+        $msg = rawurlencode($msg);
+        
+        if ($phone == 0) {
+            return false;
+        } else {
+            if (preg_match('/^15/', $phone)) {
+                $phone = $phone - 1500000000 + 1100000000;
+            }
+            $phone = preg_replace('/^549/', '', $phone);
+            return '<a class="Pointer" target="_blank" href="https://api.whatsapp.com/send?phone=549'.$phone.'&text='.$msg.'"><i class="icon-whatsapp"></i> WhatsApp</a>';
+        }
     }
 
      public function setMedia()

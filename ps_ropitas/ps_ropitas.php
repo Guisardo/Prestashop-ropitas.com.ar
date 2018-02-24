@@ -4,7 +4,7 @@ class Ps_Ropitas extends Module
 	public function __construct()
 	{
 		$this->name = 'ps_ropitas';
-		$this->version = '1.0.2';
+		$this->version = '1.1';
 		$this->author = 'Guisardo';
 		$this->need_instance = 0;
 
