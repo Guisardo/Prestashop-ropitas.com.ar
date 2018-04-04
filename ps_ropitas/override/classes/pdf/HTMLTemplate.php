@@ -1,5 +1,5 @@
 <?php
-class HTMLTemplate extends HTMLTemplateCore
+abstract class HTMLTemplate extends HTMLTemplateCore
 {
     /**
      * If the template is not present in the theme directory, it will return the default template
