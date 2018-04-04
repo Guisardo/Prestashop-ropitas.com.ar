@@ -171,9 +171,19 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
     }
     public function renderList()
     {
+        $this->addRowAction('ShippingTag');
         $this->addRowAction('WhatsApp');
         return parent::renderList();
     }
+    public function displayShippingtagLink($token = null, $id)
+    {
+        $order = new Order(intval($id));
+        if ($order->current_state == 27 || $order->current_state == 34) {
+            return '<a target="_blank" href="/index.php?fc=module&module=mercadopago&controller=shippingtag&id_order='.$id.'"><i class="icon-envelope"></i> '.$this->l('Etiqueta').'</a>';
+        } else {
+            return false;
+        }
+    }    
     public function displayWhatsappLink($token = null, $id)
     {
         $order = new Order(intval($id));
@@ -185,24 +195,42 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
         }
 
         $msg = '';
-        if ($order->current_state == 42) {
+        $order_status = (int)$order->getCurrentState();
+        if ($order_status == Configuration::get("MERCADOPAGO_STATUS_12")) {
             $customer = new Customer($order->id_customer);
             $msg = sprintf($this->l('Hola %s!
-Mi nombre es Violeta. Te molesto para consultarte por el estado de tu pedido '.$order->reference.' de Gamisé que armaste en http://www.ropitas.com.ar.
+Mi nombre es Violeta. Te molesto para consultarte por el estado de tu pedido %s de Gamisé que armaste en http://www.ropitas.com.ar.
 Veo que comenzaste con el armado del carrito de compras pero quedo en medio del proceso de pago y quedaron reservados los artículos.
-Si querés continuar la compra, seguí las siguientes indicaciones, de lo contrario, avisame si querés que cancele el pedido. Ingresá a https://tienda.ropitas.com.ar/order-history ahí va a ver tu pedido en el que dice "transacción comenzada", tenes que hacer click en el código de referencia que está subrayado. 
+Si querés continuar la compra, seguí las siguientes indicaciones, de lo contrario, avisame si querés que cancele el pedido. Ingresá a https://tienda.ropitas.com.ar/order-history ahí va a ver tu pedido en el que dice \'transacción comenzada\', tenes que hacer click en el código de referencia que está subrayado. 
 Eso va a cargar en la misma página, más abajo, el detalle del pedido. En ese detalle hay una sección de mercadopago con un botón verde para que puedas elegir el medio de pago.
 Quedo atenta a tus consultas!!'), $customer->firstname, $order->reference);
         }
-        if ($order->current_state == 33) {
+        if ($order_status == Configuration::get("MERCADOPAGO_STATUS_7")) {
             $customer = new Customer($order->id_customer);
             $msg = sprintf($this->l('Hola %s!
 Mi nombre es Violeta.
-Te quería consultar si seguís interesada en concretar la compra del pedido '.$order->reference.' de Gamisé que armaste en http://www.ropitas.com.ar o preferís que cancele la reserva de los artículos.
+Te quería consultar si seguís interesada en concretar la compra del pedido %s de Gamisé que armaste en http://www.ropitas.com.ar o preferís que cancele la reserva de los artículos.
 Necesitás que te espere unos días?
 Saludos'), $customer->firstname, $order->reference);
         }
-        $msg = rawurlencode($msg);
+        if ($order_status == Configuration::get("MERCADOPAGO_STATUS_3")) {
+            $sql = 'SELECT * FROM '._DB_PREFIX_.'mercadopago_orders_initpoint
+                WHERE cart_id = '.$order->id_cart;
+            if ($row = Db::getInstance()->getRow($sql)){
+                if ($row['init_point']) {
+                    $mp_initpoint = $row['init_point'];
+
+                    $customer = new Customer($order->id_customer);
+
+                    $msg = sprintf($this->l('Hola %s!
+Mi nombre es Violeta.
+Te quería consultar si seguís interesada en concretar la compra del pedido %s de Gamisé que armaste en http://www.ropitas.com.ar o preferís que cancele la reserva de los artículos.
+Necesitás que te espere unos días?
+Saludos'), $customer->firstname, $order->reference, $mp_initpoint);
+                }
+            }
+        }
+        $msg = str_replace('%26%23039%3B', "'", rawurlencode($msg));
         
         if ($phone == 0) {
             return false;
@@ -211,7 +239,7 @@ Saludos'), $customer->firstname, $order->reference);
                 $phone = $phone - 1500000000 + 1100000000;
             }
             $phone = preg_replace('/^549/', '', $phone);
-            return '<a class="Pointer" target="_blank" href="https://api.whatsapp.com/send?phone=549'.$phone.'&text='.$msg.'"><i class="icon-whatsapp"></i> WhatsApp</a>';
+            return '<a target="_blank" href="https://api.whatsapp.com/send?phone=549'.$phone.'&text='.$msg.'"><i class="icon-whatsapp"></i> WhatsApp</a>';
         }
     }
 
