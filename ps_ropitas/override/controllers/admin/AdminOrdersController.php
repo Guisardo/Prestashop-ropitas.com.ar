@@ -178,7 +178,14 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
     public function displayShippingtagLink($token = null, $id)
     {
         $order = new Order(intval($id));
-        if ($order->current_state == 27 || $order->current_state == 34) {
+        $order_status = (int)$order->getCurrentState();
+
+        if (in_array($order_status, array(
+            Configuration::get("MERCADOPAGO_STATUS_1"),
+            Configuration::get("MERCADOPAGO_STATUS_8"),
+            Configuration::get("MERCADOPAGO_STATUS_9"),
+            Configuration::get("MERCADOPAGO_STATUS_10")
+            ))) {
             return '<a target="_blank" href="/index.php?fc=module&module=mercadopago&controller=shippingtag&id_order='.$id.'"><i class="icon-envelope"></i> '.$this->l('Etiqueta').'</a>';
         } else {
             return false;
@@ -223,10 +230,10 @@ Saludos'), $customer->firstname, $order->reference);
                     $customer = new Customer($order->id_customer);
 
                     $msg = sprintf($this->l('Hola %s!
-Mi nombre es Violeta.
-Te quería consultar si seguís interesada en concretar la compra del pedido %s de Gamisé que armaste en http://www.ropitas.com.ar o preferís que cancele la reserva de los artículos.
-Necesitás que te espere unos días?
-Saludos'), $customer->firstname, $order->reference, $mp_initpoint);
+Te molesto para avisarte que el sistema rechazó el medio de pago que elegiste para el pedido %s de Gamisé que armaste en http://www.ropitas.com.ar.
+Si te gustaría abonar por otro medio podes hacerlo entrando en %s
+O preferís que cancelemos la reserva?
+Quedo atenta a tus consultas!!'), $customer->firstname, $order->reference, $mp_initpoint);
                 }
             }
         }
