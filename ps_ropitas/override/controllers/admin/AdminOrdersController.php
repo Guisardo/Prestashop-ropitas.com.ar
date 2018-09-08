@@ -26,12 +26,12 @@ LEFT JOIN '._DB_PREFIX_.'customer_message customer_message on customer_message.i
 WHERE orders.id_order = a.id_order LIMIT 0,1
 )
         ,
-CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
+CONCAT(c.`firstname`, \' \', c.`lastname`)
         )
         AS `customer`,
         osl.`name` AS `osname`,
         os.`color`,
-        IF((SELECT so.id_order FROM `'._DB_PREFIX_.'orders` so WHERE so.id_customer = a.id_customer AND so.id_order < a.id_order LIMIT 1) > 0, 0, 1) as new,
+        IF((SELECT so.id_order FROM `'._DB_PREFIX_.'orders` so WHERE so.id_customer = a.id_customer AND so.id_order < a.id_order AND so.valid = 1 LIMIT 1) > 0, 0, 1) as new,
         state.`name` as cname,
         IF(a.valid, 1, 0) badge_success';
  
@@ -180,7 +180,8 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
         $order = new Order(intval($id));
         $order_status = (int)$order->getCurrentState();
 
-        if (in_array($order_status, array(
+        if ($order->payment == 'MercadoLibre' ||
+            in_array($order_status, array(
             Configuration::get("MERCADOPAGO_STATUS_1"),
             Configuration::get("MERCADOPAGO_STATUS_8"),
             Configuration::get("MERCADOPAGO_STATUS_9"),
@@ -188,7 +189,7 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
             ))) {
             return '<a target="_blank" href="/index.php?fc=module&module=mercadopago&controller=shippingtag&id_order='.$id.'"><i class="icon-envelope"></i> '.$this->l('Etiqueta').'</a>';
         } else {
-            return false;
+            return '<a target="_blank" href="/index.php?fc=module&module=shippinglabel&controller=generator&id_order='.$id.'"><i class="icon-envelope"></i> '.$this->l('Etiqueta').'</a>';
         }
     }    
     public function displayWhatsappLink($token = null, $id)
@@ -204,19 +205,25 @@ CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`)
         $msg = '';
         $order_status = (int)$order->getCurrentState();
         if ($order_status == Configuration::get("MERCADOPAGO_STATUS_12")) {
-            $customer = new Customer($order->id_customer);
-            $msg = sprintf($this->l('Hola %s!
-Mi nombre es Violeta. Te molesto para consultarte por el estado de tu pedido %s de Gamisé que armaste en http://www.ropitas.com.ar.
+            $sql = 'SELECT * FROM '._DB_PREFIX_.'mercadopago_orders_initpoint
+                WHERE cart_id = '.$order->id_cart;
+            if ($row = Db::getInstance()->getRow($sql)){
+                if ($row['init_point']) {
+                    $mp_initpoint = $row['init_point'];
+                    $customer = new Customer($order->id_customer);
+                    $msg = sprintf($this->l('Hola %s!
+Mi nombre es Violeta. Te molesto para consultarte por el estado de tu pedido %s de Gamisé que armaste en www.ropitas.com.ar .
 Veo que comenzaste con el armado del carrito de compras pero quedo en medio del proceso de pago y quedaron reservados los artículos.
-Si querés continuar la compra, seguí las siguientes indicaciones, de lo contrario, avisame si querés que cancele el pedido. Ingresá a https://tienda.ropitas.com.ar/order-history ahí va a ver tu pedido en el que dice \'transacción comenzada\', tenes que hacer click en el código de referencia que está subrayado. 
-Eso va a cargar en la misma página, más abajo, el detalle del pedido. En ese detalle hay una sección de mercadopago con un botón verde para que puedas elegir el medio de pago.
-Quedo atenta a tus consultas!!'), $customer->firstname, $order->reference);
+Si querés continuar la compra podés aborarla entrando en %s , de lo contrario, avisame si querés que cancele el pedido.
+Quedo atenta a tus consultas!!'), $customer->firstname, $order->reference, $mp_initpoint);
+                }
+            }
         }
         if ($order_status == Configuration::get("MERCADOPAGO_STATUS_7")) {
             $customer = new Customer($order->id_customer);
             $msg = sprintf($this->l('Hola %s!
 Mi nombre es Violeta.
-Te quería consultar si seguís interesada en concretar la compra del pedido %s de Gamisé que armaste en http://www.ropitas.com.ar o preferís que cancele la reserva de los artículos.
+Te quería consultar si seguís interesada en concretar la compra del pedido %s de Gamisé que armaste en www.ropitas.com.ar o preferís que cancele la reserva de los artículos.
 Necesitás que te espere unos días?
 Saludos'), $customer->firstname, $order->reference);
         }
@@ -230,7 +237,7 @@ Saludos'), $customer->firstname, $order->reference);
                     $customer = new Customer($order->id_customer);
 
                     $msg = sprintf($this->l('Hola %s!
-Te molesto para avisarte que el sistema rechazó el medio de pago que elegiste para el pedido %s de Gamisé que armaste en http://www.ropitas.com.ar.
+Te molesto para avisarte que el sistema rechazó el medio de pago que elegiste para el pedido %s de Gamisé que armaste en www.ropitas.com.ar .
 Si te gustaría abonar por otro medio podes hacerlo entrando en %s
 O preferís que cancelemos la reserva?
 Quedo atenta a tus consultas!!'), $customer->firstname, $order->reference, $mp_initpoint);
@@ -242,7 +249,7 @@ Quedo atenta a tus consultas!!'), $customer->firstname, $order->reference, $mp_i
         if ($phone == 0) {
             return false;
         } else {
-            if (preg_match('/^15/', $phone)) {
+            if (preg_match('/^15/', $phone) && in_array($address->id_state, array(99, 103))) {
                 $phone = $phone - 1500000000 + 1100000000;
             }
             $phone = preg_replace('/^549/', '', $phone);

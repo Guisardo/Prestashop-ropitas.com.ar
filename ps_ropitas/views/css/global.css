@@ -34,3 +34,21 @@ button.exclusive {
 ul.product_list .product-image-container .quick-view-wrapper-mobile {
   display: none !important;
 }
+
+.box-info-product > .content_prices #reduction_amount {
+  display: none !important;
+}
+
+.box-info-product > .content_prices #old_price {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+}
+
+.box-info-product > .content_prices #old_price_display {
+  margin: 0 auto;
+}
+
+.box-info-product > .content_prices #old_price_display .price {
+      font-size: 30px;
+}
