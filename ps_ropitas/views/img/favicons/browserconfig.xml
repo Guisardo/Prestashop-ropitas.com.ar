@@ -2,11 +2,8 @@
 <browserconfig>
     <msapplication>
         <tile>
-            <square70x70logo src="/modules/ps_ropitas/views/img/favicons/mstile-70x70.png?v=yyaR832lam"/>
-            <square150x150logo src="/modules/ps_ropitas/views/img/favicons/mstile-150x150.png?v=yyaR832lam"/>
-            <square310x310logo src="/modules/ps_ropitas/views/img/favicons/mstile-310x310.png?v=yyaR832lam"/>
-            <wide310x150logo src="/modules/ps_ropitas/views/img/favicons/mstile-310x150.png?v=yyaR832lam"/>
-            <TileColor>#9a61ad</TileColor>
+            <square150x150logo src="/modules/ps_ropitas/views/img/favicons/mstile-150x150.png?v=8j8GemOE7L"/>
+            <TileColor>#f7f7f7</TileColor>
         </tile>
     </msapplication>
 </browserconfig>

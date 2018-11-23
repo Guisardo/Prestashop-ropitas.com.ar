@@ -24,7 +24,7 @@ $(document).ready(function() {
 	var tpl_secure =
 '<li>' +
 '	<a href="http://qr.afip.gob.ar/?qr=z7JppuZzUTVA8PGEhnazew,," target="_F960AFIPInfo">' +
-'	    <img src="https://www.afip.gob.ar/images/f960/DATAWEB.jpg" border="0" style="width: 45px;">' +
+'	    <img src="/modules/ps_wsfe/img/dataweb.jpg" border="0" style="width: 45px;">' +
 '	</a>' +
 '	<a href="https://ssl.comodo.com" target="_blank">' +
 '	    <img src="https://ssl.comodo.com/images/comodo_secure_seal_76x26_transp.png" alt="SSL" width="76" height="26" style="border: 0px;">' +

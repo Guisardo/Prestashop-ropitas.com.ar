@@ -1,50 +1,20 @@
 {
-    "name": "Beb\u00e9 Gamis\u00e9",
-    "short_name": "Beb\u00e9 Gamis\u00e9",
+    "name": "Tienda de Ropitas",
+    "short_name": "Tienda de Ropitas",
     "icons": [
         {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-36x36.png?v=yyaR832lam",
-            "sizes": "36x36",
-            "type": "image/png"
-        },
-        {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-48x48.png?v=yyaR832lam",
-            "sizes": "48x48",
-            "type": "image/png"
-        },
-        {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-72x72.png?v=yyaR832lam",
-            "sizes": "72x72",
-            "type": "image/png"
-        },
-        {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-96x96.png?v=yyaR832lam",
-            "sizes": "96x96",
-            "type": "image/png"
-        },
-        {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-144x144.png?v=yyaR832lam",
-            "sizes": "144x144",
-            "type": "image/png"
-        },
-        {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-192x192.png?v=yyaR832lam",
+            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-192x192.png?v=8j8GemOE7L",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-256x256.png?v=yyaR832lam",
-            "sizes": "256x256",
-            "type": "image/png"
-        },
-        {
-            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-384x384.png?v=yyaR832lam",
-            "sizes": "384x384",
+            "src": "/modules/ps_ropitas/views/img/favicons/android-chrome-512x512.png?v=8j8GemOE7L",
+            "sizes": "512x512",
             "type": "image/png"
         }
     ],
-    "theme_color": "#9a61ad",
-    "background_color": "#9a61ad",
-    "start_url": "https://tienda.ropitas.com.ar/?utm_source=homescreen",
+    "theme_color": "#8a7fd4",
+    "background_color": "#8a7fd4",
+    "start_url": "https://tienda.ropitas.com.ar?utm_source=homescreen",
     "display": "standalone"
 }
