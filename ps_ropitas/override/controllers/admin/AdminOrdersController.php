@@ -9,7 +9,10 @@
          parent::__construct();
 
          $this->_select = '
-        a.id_currency,
+        IF (c.id_customer = 26,
+        \'MercadoLibre\',
+        ca.name)
+        as carrier,
         a.id_order AS id_pdf,
 
         IF (c.id_customer = 26,
@@ -37,6 +40,7 @@ CONCAT(c.`firstname`, \' \', c.`lastname`)
  
          $this->_join = '
          LEFT JOIN `'._DB_PREFIX_.'customer` c ON (c.`id_customer` = a.`id_customer`)
+         LEFT JOIN '._DB_PREFIX_.'carrier ca ON (ca.id_carrier = a.id_carrier)
          LEFT JOIN `'._DB_PREFIX_.'address` address ON address.id_address = a.id_address_delivery
          LEFT JOIN `'._DB_PREFIX_.'state` state ON address.id_state = state.id_state
          LEFT JOIN `'._DB_PREFIX_.'order_state` os ON (os.`id_order_state` = a.`current_state`)
@@ -91,9 +95,12 @@ CONCAT(c.`firstname`, \' \', c.`lastname`)
                  'callback' => 'setOrderCurrency',
                  'badge_success' => true
              ),
-             'payment' => array(
-                 'title' => $this->l('Payment')
-             ),
+            'carrier' => array(
+                'title' => $this->l('Carrier'),
+                'align' => 'text-left',
+                'callback' => 'replaceZeroByShopName',
+                'filter_key' => 'ca!name'
+            ),
              'osname' => array(
                  'title' => $this->l('Status'),
                  'type' => 'select',
@@ -162,6 +169,11 @@ CONCAT(c.`firstname`, \' \', c.`lastname`)
  
      }
 
+    public static function replaceZeroByShopName($echo, $tr)
+    {
+        return ($echo == '0' ? Carrier::getCarrierNameFromShopName() : $echo);
+    }
+
     public function renderForm()
     {
         parent::renderForm();
@@ -197,9 +209,9 @@ CONCAT(c.`firstname`, \' \', c.`lastname`)
         $order = new Order(intval($id));
         $address = new Address($order->id_address_invoice);
 
-        $phone = (int)preg_replace('/\D+/', '', $address->phone_mobile);
+        $phone = (int)preg_replace('/(?: 15\-|\D)/', '', $address->phone_mobile);
         if ($phone == 0) {
-            $phone = (int)preg_replace('/\D+/', '', $address->phone);
+            $phone = (int)preg_replace('/(?: 15\-|\D)/', '', $address->phone);
         }
 
         $msg = '';

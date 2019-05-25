@@ -19,9 +19,9 @@ class AdminCustomerController extends AdminCustomerControllerCore
         $address_id = (int)Address::getFirstCustomerAddressId($customer->id);
         $address = new Address($address_id);
 
-        $phone = (int)preg_replace('/\D+/', '', $address->phone_mobile);
+        $phone = (int)preg_replace('/(?: 15\-|\D)/', '', $address->phone_mobile);
         if ($phone == 0) {
-            $phone = (int)preg_replace('/\D+/', '', $address->phone);
+            $phone = (int)preg_replace('/(?: 15\-|\D)/', '', $address->phone);
         }
 
         if ($phone == 0) {

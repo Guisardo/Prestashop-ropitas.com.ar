@@ -18,9 +18,9 @@ class AdminCartsController extends AdminCartsControllerCore
         $cart = new Cart(intval($id));
         $address = new Address($cart->id_address_invoice);
 
-        $phone = (int)preg_replace('/\D+/', '', $address->phone_mobile);
+        $phone = (int)preg_replace('/(?: 15\-|\D)/', '', $address->phone_mobile);
         if ($phone == 0) {
-            $phone = (int)preg_replace('/\D+/', '', $address->phone);
+            $phone = (int)preg_replace('/(?: 15\-|\D)/', '', $address->phone);
         }
 
         if ($phone == 0) {
@@ -28,9 +28,9 @@ class AdminCartsController extends AdminCartsControllerCore
         } else {
             $customer = new Customer($cart->id_customer);
             $msg = sprintf($this->l('Hola %s! Cómo estás?
-Todavía estás a tiempo de concretar tu pedido en www.ropitas.com.ar en 3 cuotas sin interés!!
-%s
-No pierdas esta oportunidad!! Cualquier duda que tengas, escribinos!
+Todavía estás a tiempo de concretar tu pedido en www.ropitas.com.ar
+Entra a este enlace para continuar con tu carrito %s
+No pierdas esta oportunidad!! Cualquier duda que tengas, escribime!
 Abrazo :)'), $customer->firstname, 'https://tienda.ropitas.com.ar/order?step=3&recover_cart='.$id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.$id));
             $msg = str_replace('%26%23039%3B', "'", rawurlencode($msg));
             

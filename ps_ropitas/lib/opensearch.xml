@@ -5,5 +5,5 @@
   <Description>Búsqueda en la Tienda de Bebé Gamisé</Description>
   <InputEncoding>UTF-8</InputEncoding>
   <Url method="get" type="text/html" 
-      template="https://tienda.ropitas.com.ar/search??controller=search&amp;orderby=position&amp;orderway=desc&amp;search_query={searchTerms}&amp;submit_search="/>
+      template="https://tienda.ropitas.com.ar/busqueda?controller=search&amp;s={searchTerms}"/>
 </OpenSearchDescription>
